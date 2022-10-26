@@ -1,0 +1,57 @@
+<?php 
+
+namespace App\Controllers;
+use App\FrameworkTools\Abstracts\Controllers\AbstractControllers;
+
+class LeticiaController extends AbstractControllers {
+
+    private $params;
+    private $attrName;
+
+    public function Helena1(){
+        try
+		{
+            $response = ['success'=> true];
+			
+            $this->params = $this->processServerElements->getInputJSONData();
+
+            $this->verificationInputVar();
+
+            $query = "INSERT INTO car (carName, carModel) VALUES (:carName, :carModel)";
+            
+            $statement = $this->pdo->prepare($query);
+            $statement->execute([
+			
+                ':carName' => $this->params['carName'],
+                ':carModel' => $this->params['carModel']
+				
+			]);
+            
+        } catch (\Exception $e){
+		
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+                'missingAtribute' => $this->attrName   
+				
+            ];
+        }
+        
+        view($response);
+    }
+
+    public function Helena2(){
+
+        if(!$this->params['carName'])
+		{
+            $this->attrName = 'name';
+            throw new \Exception('the car name has to be send in the request');
+        }
+
+        if(!$this->params['carModel'])
+		{
+            $this->attrName = 'carModel';
+            throw new \Exception('the car model has to be send in the request');
+        }        
+    }
+}
